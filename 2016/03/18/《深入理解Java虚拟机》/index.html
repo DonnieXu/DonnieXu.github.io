@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>《深入理解Java虚拟机》阅读笔记 第10章-早期（编译期）优化 | DonnieXu</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/3.0.3/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">《深入理解Java虚拟机》阅读笔记 第10章-早期（编译期）优化</h1><a id="logo" href="/.">DonnieXu</a><p class="description">Stay hungry, Stay foolish.</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">《深入理解Java虚拟机》阅读笔记 第10章-早期（编译期）优化</h1><div class="post-meta">Mar 18, 2016<span> | </span><span class="category"><a href="/categories/Java/">Java</a><a href="/categories/Java/读书笔记/">读书笔记</a><a href="/categories/Java/读书笔记/JVM/">JVM</a><a href="/categories/Java/读书笔记/JVM/《深入理解Java虚拟机》/">《深入理解Java虚拟机》</a></span><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span></div><div class="post-content"><p>编译期可能是：</p>
+<ul>
+<li><p>前端编译器：把*.java文件转变为*.class文件的过程；如Sun的Javac、Eclipse JDT中的增量式编译器（ECJ）。</p>
+</li>
+<li><p>虚拟机的后端运行期编译期 （JIT编译器，Just In Time Compiler）把字节码转变成机器码的过程；如HotSpot VM的C1、C2编译器。</p>
+</li>
+<li><p>使用静态提前编译期（AOT编译器，Ahead Of Time Compiler）直接把*.java文件编译成本地机器代码的过程。如GNU Compiler for the Java（GCJ）、Excelsior JET。</p>
+</li>
+</ul>
+<blockquote>
+<p>相当多新生的Java语言特性，都是靠编译器的“语法糖”来实现，而不是依赖虚拟机的底层改进来支持。</p>
+</blockquote>
+<p>编译过程：</p>
+<ol>
+<li><p>解析与填充符号表</p>
+<p> 1.1. 词法分析（源代码的字符流变为标记（Token）集合）、语法分析（根据Token序列构造抽象语法树（Abstract Syntax Tree，AST，描述程序代码语法结构的树形表示方式，每一个节点都代表着程序代码中的一个语法结构（Construct），如包、类型、修饰符、运算法、接口、返回值、代码注释等））</p>
+<p> 1.2. 填充符号表</p>
+<pre><code>符号表（Symbol）是由一组符号地址和符号信息构成的表格。
+</code></pre></li>
+<li><p>插入式注解处理器的注解处理过程</p>
+</li>
+<li><p>语义分析与字节码生成过程</p>
+<p> 3.1. 标注检查</p>
+<pre><code>* 变量使用前是否已被声明；
+* 变量与赋值之间的数据类型是否能够匹配；
+* 常量折叠。
+</code></pre><p> 3.2. 数据及控制流分析</p>
+<pre><code>* 程序局部变量在使用前是否有赋值；
+* 方法的每条路径是否都有返回值；
+* 是否所有的受查异常都被正常处理了问题；
+</code></pre><p> 3.3. 解语法糖</p>
+<pre><code>语法糖：在计算机语言中添加的某种语法，这种语法对语言的功能并没有影响，但是更方便程序员使用。使用语法糖通常能够增加程序的可读性，从而减少程序代码出错的机会。
+</code></pre><p> 3.4. 字节码生成</p>
+<pre><code>* 前面各步骤生成的信息（语法糖、符号表）转化成字节码写到磁盘；
+* 少量的代码添加和转换工作。如实力构造器&lt;init&gt;()和类构造器&lt;clinit&gt;()。
+</code></pre><p><img src="/Users/xudong/hexo/source/pictures/Javac的编译过程.png" alt=""><br><img src="/Users/xudong/hexo/source/pictures/Javac编译过程的主题代码.png" alt=""></p>
+</li>
+</ol>
+<p>Java语法糖</p>
+<ol>
+<li><p>泛型与类型擦除</p>
+<p>Java语言中的泛型只在程序源码中存在，在编译后的字节码文件中，就已经替换为原来的原生类型（Raw Type，也称为裸类型），并且在相应的地方插入了强制转型代码。</p>
+<p>泛型技术实际上是Java语言的一颗语法糖，Java语言中的泛型实现方法称为类型擦除，基于这种方法实现的泛型称为伪泛型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GenericTypes</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">(List&lt;String&gt; list)</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"invoke method (List&lt;String&gt; list)"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span>  <span class="keyword">void</span> <span class="title">method</span><span class="params">(List&lt;Integer&gt; list)</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"invoke method (List&lt;Integer&gt; list)"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<blockquote>
+<p>编译失败，参数List<integer>和List<string>编译之后被擦除了，变成一样的原生类型List<e>。</e></string></integer></p>
+</blockquote>
+<p>   书上说改成以下就能重载：</p>
+   <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GenericTypes</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">method</span><span class="params">(List&lt;String&gt; list)</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"invoke method (List&lt;String&gt; list)"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">method</span><span class="params">(List&lt;Integer&gt; list)</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"invoke method (List&lt;Integer&gt; list)"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/Users/xudong/hexo/source/pictures/代码清单10-5解释.png" alt=""></p>
+<blockquote>
+<p>以上在JDK 1.6中才能编译成功，我在1.7下编译失败。</p>
+</blockquote>
+<ol>
+<li>自动装箱、拆箱与遍历循环（Foreach循环）<br><img src="/Users/xudong/hexo/source/pictures/代码清单10-6.png" alt=""><br> 5种语法糖：泛型、自动装箱、自动拆箱、便利循环、变长参数<br><img src="/Users/xudong/hexo/source/pictures/代码清单10-7-1" alt=""><br><img src="/Users/xudong/hexo/source/pictures/代码清单10-7-2" alt=""></li>
+<li><p>条件编译</p>
+<p>根据布尔常量值的真假，编译器会把分支中不成立的代码块消除掉。只能使用条件为常量的if语句。</p>
+<blockquote>
+<p>Java语法糖：</p>
+<p>泛型、自动装箱、自动拆箱、便利循环、变长参数、条件编译、内部类、枚举类、断言语句、对枚举和字符串的switch支持（JDK1.7）、try语句中定义和关闭资源（JDK1.7）。</p>
+</blockquote>
+</li>
+</ol>
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a data-url="http://www.DonnieXu.site/2016/03/18/《深入理解Java虚拟机》/" data-id="cilxsmzm30002iexq9lkrs0e0" class="article-share-link">分享到</a><div class="tags"><a href="/tags/Java/">Java</a><a href="/tags/读书笔记/">读书笔记</a><a href="/tags/JVM/">JVM</a></div><div class="post-nav"><a href="/2016/03/18/《深入理解Java虚拟机》阅读笔记第10章/" class="next">《深入理解Java虚拟机》阅读笔记第10章</a></div></div></div></div><div class="pure-u-1-4"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://www.DonnieXu.site"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/读书笔记/">读书笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/读书笔记/JVM/">JVM</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/读书笔记/JVM/《深入理解Java虚拟机》/">《深入理解Java虚拟机》</a></li></ul></li></ul></li></ul></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/volatile/" style="font-size: 15px;">volatile</a> <a href="/tags/读书笔记/" style="font-size: 15px;">读书笔记</a> <a href="/tags/JVM/" style="font-size: 15px;">JVM</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/03/18/《深入理解Java虚拟机》/">《深入理解Java虚拟机》阅读笔记 第10章-早期（编译期）优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/18/《深入理解Java虚拟机》阅读笔记第10章/">《深入理解Java虚拟机》阅读笔记第10章</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/volatile/">volatile</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/hello-world/">Hello World</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://blog.csdn.net/u010575093?viewmode=contents" title="Donnie93的专栏" target="_blank">Donnie93的专栏</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">© <a href="/." rel="nofollow">DonnieXu.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="/css/jquery.fancybox.css?v=0.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
